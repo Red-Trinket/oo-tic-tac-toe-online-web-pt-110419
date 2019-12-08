@@ -1,4 +1,10 @@
-
+class TicTacToe
+  @board 
+  
+  def initialize
+    @board = ["","","","","","","","",""]
+  
+end 
  
 WIN_COMBINATIONS = [
   [0, 1, 2],
