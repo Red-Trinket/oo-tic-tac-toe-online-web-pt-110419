@@ -1,130 +1,165 @@
-class TicTacToe
-  
+Skip to content
+Why GitHub? 
+Enterprise
+Explore 
+Marketplace
+Pricing 
+Search
+
+Sign in
+Sign up
+106alexisadorn/Tic-Tac-Toe-Ruby
+ Code Issues 0 Pull requests 0 Projects 0 Security Insights
+Join GitHub today
+GitHub is home to over 40 million developers working together to host and review code, manage projects, and build software together.
+
+Tic-Tac-Toe-Ruby/tic-tac-toe-rb-v-000/lib/tic_tac_toe.rb
+@alexisadorn alexisadorn Tic Tac Toe labs
+8f439e7 on Mar 28, 2017
+133 lines (116 sloc)  2.37 KB
+ 
 WIN_COMBINATIONS = [
-  [0,1,2],
-  [3,4,5],
-  [6,7,8],
-  [0,3,6],
-  [1,4,7],
-  [2,5,8],
-  [0,4,8],
-  [6,4,2]
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8],
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 5, 8],
+  [0, 4, 8],
+  [6, 4, 2]
 ]
 
-#Initialize method should set board 
-def initialize
-    @board = [" ", " ", " ", " ", " ", " ", " ", " ", " " ]
+def display_board(board)
+  puts " #{board[0]} | #{board[1]} | #{board[2]} "
+  puts "-----------"
+  puts " #{board[3]} | #{board[4]} | #{board[5]} "
+  puts "-----------"
+  puts " #{board[6]} | #{board[7]} | #{board[8]} "
 end
 
-def display_board
-    puts " #{@board[0]} | #{@board[1]} | #{@board[2]} "
-    puts "-----------"
-    puts " #{@board[3]} | #{@board[4]} | #{@board[5]} "
-    puts "-----------"
-    puts " #{@board[6]} | #{@board[7]} | #{@board[8]} "
-  end
-
-
- def input_to_index(player_input)
-  player_input = player_input.to_i
-  index = player_input-1
-  return index
+def input_to_index(user_input)
+  user_input.to_i - 1
 end
 
-def move(index, player = 'X')
-  @board[index] = player
+def move(board, index, current_player)
+  board[Index] = current_player
 end
 
-def position_taken?(index)
-  @board[index]== "X" || @board[index] == "O"
+def position_taken?(board, index)
+  !(board[Index].nil? || board[Index] == " ")
 end
 
-
-def valid_move?(index)
-  index.between?(0,8) && !position_taken?(index)
+def valid_move?(board, index)
+  index.between?(0,8) && !position_taken?(board, index)
 end
 
-
-def turn
-  puts "Please enter 1-9:"
-  user_input = gets.to_i 
-  index = input_to_index(user_input)
-  if valid_move?(index)
-    move(index, current_player)
-    display_board
-  else
-    turn
-  end
-end
-
-def turn_count
-  counter = 0
-  @board.each do |space|
-    if space == 'X' || space =='O'
-      counter += 1
+def turn_count(board)
+  turn = 0
+  board.each do |index|
+    if index == "X" || index == "O"
+      turn += 1
     end
   end
-  return counter
+  return turn
 end
 
-def current_player
-  turn_count% 2 == 0 ? "X" : "O"
+def current_player(board)
+  #if the turn count is an even number, that means O just went, so the next/current player is X
+  num_turns = turn_count(board)
+  if num_turns % 2 == 0
+    player = "X"
+  else
+    player = "O"
+  end
+  return player
 end
 
-
-def check_win_combo?(player, win_combo)
-  win_combo.all? do |position|
-    @board[position] == player
+def turn(board)
+  puts "Please choose a number 1-9:"
+  user_input = gets.chomp
+  index = input_to_index(user_input)
+  if valid_move?(board, index)
+    player_token = current_player(board)
+    move(board, index, player_token)
+    display_board(board)
+  else
+    turn(board)
   end
 end
 
+def won?(board)
+  WIN_COMBINATIONS.each {|win_combo|
+    index_0 = win_combo[0]
+    index_1 = win_combo[1]
+    index_2 = win_combo[2]
 
-def won?
-  WIN_COMBINATIONS.each do |win_combo|
-    if check_win_combo?('X', win_combo)
+    position_1 = board[index_0]
+    position_2 = board[index_1]
+    position_3 = board[index_2]
+
+    if position_1 == "X" && position_2 == "X" && position_3 == "X"
       return win_combo
-      elsif check_win_combo?('O', win_combo)
+    elsif position_1 == "O" && position_2 == "O" && position_3 == "O"
       return win_combo
-  end
-end
-return false 
-end
-
-def full?
-  @board.all?{|token| token == "X" || token == "O"}
-end
-
-def draw?
-  !won? && full?
-end
-
-def over?
-  if won?|| draw?||full?
-  return true
-else
+    end
+  }
   return false
 end
+
+def full?(board)
+  board.all? {|index| index == "X" || index == "O"}
 end
 
-def winner
-  if win_combo = won?
-    return @board[win_combo.first]
+def draw?(board)
+  if !won?(board) && full?(board)
+    return true
+  else
+    return false
   end
 end
 
-def play
-  while !over?
-    turn
-  end
-  if won?
-    @winner = winner 
-    puts 'Congratulations ' + @winner + "!"
-  elsif draw?
-    puts "Cat's Game!"
+def over?(board)
+  if won?(board) || draw?(board)
+    return true
+  else
+    return false
   end
 end
+
+def winner (board)
+  index = []
+  index = won?(board)
+  if index == false
+    return nil
+  else
+    if board[index[0]] == "X"
+      return "X"
+    else
+      return "O"
+    end
+  end
 end
 
-newgame = TicTacToe.new 
-newgame.play
+def play(board)
+  until over?(board) == true
+    turn(board)
+  end
 
+  if won?(board)
+    puts "Congratulations #{winner(board)}!"
+  elsif draw?(board)
+    puts "Cats Game!"
+  end
+end
+© 2019 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
